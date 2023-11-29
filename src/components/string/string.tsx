@@ -1,29 +1,29 @@
-import { FC, useState, ChangeEvent, useRef, useEffect } from 'react';
+import {
+  FC,
+  useState,
+  ChangeEvent,
+  useRef,
+  useEffect,
+  useCallback,
+} from 'react';
 import { SolutionLayout } from '../ui/solution-layout/solution-layout';
 import { Input } from '../ui/input/input';
 import { Button } from '../ui/button/button';
 import StringPageStyle from './string.module.css';
-import { Circle } from '../ui/circle/circle';
 import { DELAY_IN_MS } from '../../constants/delays';
-import { ReversableList } from '../../utils/revertOrder';
-import { ElementStates } from '../../types/element-states';
-
-type TCircleContainer = {
-  items: Array<string>;
-  head: number | null;
-  tail: number | null;
-};
+import { ReversableList } from '../../utils/ReversableList';
+import { CircleContainer } from '../circle-container/circle-container';
 
 export const StringComponent: FC = () => {
   const [str, setStr] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [needRefreh, setNeedRefresh] = useState<boolean>(false);
 
-  const reversableListRef = useRef(new ReversableList([]));
+  const reversableListRef = useRef(new ReversableList<string>([]));
 
-  const doMagic = () => {
+  const processOnClick = useCallback(() => {
     setLoading(true);
-  };
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -69,7 +69,12 @@ export const StringComponent: FC = () => {
           }}
           value={str}
         ></Input>
-        <Button text="Развернуть" onClick={doMagic} isLoader={loading}></Button>
+        <Button
+          text="Развернуть"
+          onClick={processOnClick}
+          isLoader={loading}
+          disabled={str ? false : true}
+        ></Button>
       </div>
       <CircleContainer
         items={reversableListRef.current.currentArr}
@@ -77,27 +82,5 @@ export const StringComponent: FC = () => {
         tail={reversableListRef.current.tail}
       />
     </SolutionLayout>
-  );
-};
-
-const CircleContainer: FC<TCircleContainer> = ({ items, head, tail }) => {
-  const calculateCircleState = (ind: number) => {
-    let circleState = ElementStates.Default;
-    if (head !== null && tail !== null) {
-      if (ind < head || ind > tail) {
-        circleState = ElementStates.Modified;
-      } else if (ind === head || ind === tail) {
-        circleState = ElementStates.Changing;
-      }
-    }
-    return circleState;
-  };
-
-  return (
-    <div className={StringPageStyle.letter__container}>
-      {items.map((el, ind) => (
-        <Circle state={calculateCircleState(ind)} key={ind} letter={el} />
-      ))}
-    </div>
   );
 };

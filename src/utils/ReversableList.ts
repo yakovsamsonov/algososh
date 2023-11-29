@@ -6,14 +6,14 @@ interface IRefersableList<T> {
   stepDelay?: number;
 }
 
-export class ReversableList implements IRefersableList<string> {
+export class ReversableList<T> implements IRefersableList<T> {
   initialArr;
   currentArr;
   head: number | null;
   tail: number | null;
   stepDelay;
 
-  constructor(arr: string[], stepDelay?: number) {
+  constructor(arr: Array<T>, stepDelay?: number) {
     this.initialArr = arr;
     this.currentArr = arr;
     this.head = null;
@@ -21,7 +21,7 @@ export class ReversableList implements IRefersableList<string> {
     this.stepDelay = stepDelay;
   }
 
-  changeInitialArr = (arr: Array<string>) => {
+  changeInitialArr = (arr: Array<T>) => {
     this.initialArr = arr;
     this.currentArr = arr;
     this.head = null;
