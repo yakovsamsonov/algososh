@@ -1,35 +1,35 @@
 interface IRefersableList<T> {
   initialArr: Array<T>;
   currentArr: Array<T>;
-  head: number | null;
-  tail: number | null;
+  head?: number;
+  tail?: number;
   stepDelay?: number;
 }
 
 export class ReversableList<T> implements IRefersableList<T> {
   initialArr;
   currentArr;
-  head: number | null;
-  tail: number | null;
+  head?: number;
+  tail?: number;
   stepDelay;
 
   constructor(arr: Array<T>, stepDelay?: number) {
     this.initialArr = arr;
     this.currentArr = arr;
-    this.head = null;
-    this.tail = null;
+    this.head = undefined;
+    this.tail = undefined;
     this.stepDelay = stepDelay;
   }
 
   changeInitialArr = (arr: Array<T>) => {
     this.initialArr = arr;
     this.currentArr = arr;
-    this.head = null;
-    this.tail = null;
+    this.head = undefined;
+    this.tail = undefined;
   };
 
   initCounters = () => {
-    if (this.head === null && this.tail === null) {
+    if (this.head === undefined || this.tail === undefined) {
       this.head = 0;
       this.tail = this.initialArr.length - 1;
     }
@@ -48,7 +48,7 @@ export class ReversableList<T> implements IRefersableList<T> {
   };
 
   swap = () => {
-    if (this.head !== null && this.tail !== null) {
+    if (this.head !== undefined && this.tail !== undefined) {
       this._swap(this.head, this.tail);
       this.head++;
       this.tail--;

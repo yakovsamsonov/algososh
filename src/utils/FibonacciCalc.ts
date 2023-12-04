@@ -1,9 +1,9 @@
-type THash = {
-  [index: number]: number;
+type THash<T> = {
+  [index: number]: T;
 };
 
 interface TFibonacciCalculator {
-  hash: THash;
+  hash: THash<number>;
 }
 
 export class FibonacciCalculator implements TFibonacciCalculator {

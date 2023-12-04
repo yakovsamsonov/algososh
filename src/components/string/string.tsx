@@ -13,6 +13,8 @@ import StringPageStyle from './string.module.css';
 import { DELAY_IN_MS } from '../../constants/delays';
 import { ReversableList } from '../../utils/ReversableList';
 import { CircleContainer } from '../circle-container/circle-container';
+import { ControlBox } from '../control-box/control-box';
+import { ResultContainer } from '../result-container/result-container';
 
 export const StringComponent: FC = () => {
   const [str, setStr] = useState<string>('');
@@ -23,22 +25,21 @@ export const StringComponent: FC = () => {
 
   const processOnClick = useCallback(() => {
     setLoading(true);
-  }, []);
-
-  useEffect(() => {
-    if (loading) {
-      reversableListRef.current.changeInitialArr(str.split(''));
-      setNeedRefresh(true);
-      setStr('');
-    }
-  }, [loading]);
+    reversableListRef.current.changeInitialArr(str.split(''));
+    setNeedRefresh(true);
+    setStr('');
+  }, [str]);
 
   useEffect(() => {
     setNeedRefresh(false);
     if (needRefreh) {
+      console.log(
+        reversableListRef.current.head,
+        reversableListRef.current.tail
+      );
       if (
-        reversableListRef.current.head === null ||
-        reversableListRef.current.tail === null
+        reversableListRef.current.head === undefined ||
+        reversableListRef.current.tail === undefined
       ) {
         setTimeout(() => {
           reversableListRef.current.initCounters();
@@ -59,7 +60,7 @@ export const StringComponent: FC = () => {
 
   return (
     <SolutionLayout title="Строка">
-      <div className={StringPageStyle.container}>
+      <ControlBox>
         <Input
           maxLength={11}
           isLimitText={true}
@@ -75,12 +76,14 @@ export const StringComponent: FC = () => {
           isLoader={loading}
           disabled={str ? false : true}
         ></Button>
-      </div>
-      <CircleContainer
-        items={reversableListRef.current.currentArr}
-        head={reversableListRef.current.head}
-        tail={reversableListRef.current.tail}
-      />
+      </ControlBox>
+      <ResultContainer extraClass={StringPageStyle.result__container}>
+        <CircleContainer
+          items={reversableListRef.current.currentArr}
+          head={reversableListRef.current.head}
+          tail={reversableListRef.current.tail}
+        />
+      </ResultContainer>
     </SolutionLayout>
   );
 };

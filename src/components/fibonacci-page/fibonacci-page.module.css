@@ -3,13 +3,6 @@
   width: 100%;
 }
 
-.container {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
 .result__container {
-  margin-top: 48px;
   max-width: 944px;
 }

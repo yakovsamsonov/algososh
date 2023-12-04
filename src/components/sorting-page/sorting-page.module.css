@@ -1,0 +1,28 @@
+.result__container {
+  margin-top: 48px;
+  column-gap: 10px;
+  align-items: flex-end;
+  flex-wrap: nowrap;
+  min-height: 368px;
+}
+
+.control__container {
+  max-width: 924px;
+  column-gap: 52px;
+  width: 100%;
+  align-items: center;
+}
+
+.control__group {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.control__group_radio {
+  gap: 40px;
+}
+
+.control__button {
+  min-width: 205px;
+}
