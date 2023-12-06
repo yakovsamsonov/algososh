@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { SolutionLayout } from '../ui/solution-layout/solution-layout';
 import { ControlBox } from '../control-box/control-box';
+import { ControlGroup } from '../control-group/control-group';
 import { RadioInput } from '../ui/radio-input/radio-input';
 import { Button } from '../ui/button/button';
 import { Direction } from '../../types/direction';
@@ -75,9 +76,7 @@ export const SortingPage: FC = () => {
   return (
     <SolutionLayout title="Сортировка массива">
       <ControlBox extraClass={SortingPageStyle.control__container}>
-        <div
-          className={`${SortingPageStyle.control__group} ${SortingPageStyle.control__group_radio}`}
-        >
+        <ControlGroup extraClass={`${SortingPageStyle.control__group_radio}`}>
           <RadioInput
             name={'mode'}
             value={SortingMode.Selection}
@@ -94,8 +93,8 @@ export const SortingPage: FC = () => {
             disabled={loading}
             onChange={changeMode}
           ></RadioInput>
-        </div>
-        <div className={SortingPageStyle.control__group}>
+        </ControlGroup>
+        <ControlGroup>
           <Button
             name={Direction.Ascending}
             sorting={Direction.Ascending}
@@ -114,7 +113,7 @@ export const SortingPage: FC = () => {
             onClick={processOnClick}
             extraClass={SortingPageStyle.control__button}
           ></Button>
-        </div>
+        </ControlGroup>
         <Button
           text="Новый массив"
           onClick={generateNewArray}

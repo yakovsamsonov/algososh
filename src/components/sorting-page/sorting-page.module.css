@@ -13,12 +13,6 @@
   align-items: center;
 }
 
-.control__group {
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-}
-
 .control__group_radio {
   gap: 40px;
 }

@@ -14,6 +14,7 @@ import { CircleContainer } from '../circle-container/circle-container';
 import { FibonacciCalculator } from '../../utils/FibonacciCalc';
 import { SHORT_DELAY_IN_MS } from '../../constants/delays';
 import { ControlBox } from '../control-box/control-box';
+import { ControlGroup } from '../control-group/control-group';
 import { ResultContainer } from '../result-container/result-container';
 
 export const FibonacciPage: FC = () => {
@@ -58,23 +59,25 @@ export const FibonacciPage: FC = () => {
   return (
     <SolutionLayout title="Последовательность Фибоначчи">
       <ControlBox>
-        <Input
-          type={'number'}
-          min={1}
-          max={19}
-          value={str}
-          isLimitText={true}
-          extraClass={FibonacciPageStyle.input}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            setStr(e.target.value);
-          }}
-        ></Input>
-        <Button
-          text="Рассчитать"
-          onClick={processOnClick}
-          isLoader={loading}
-          disabled={str ? false : true}
-        ></Button>
+        <ControlGroup>
+          <Input
+            type={'number'}
+            min={1}
+            max={19}
+            value={str}
+            isLimitText={true}
+            extraClass={FibonacciPageStyle.input}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setStr(e.target.value);
+            }}
+          ></Input>
+          <Button
+            text="Рассчитать"
+            onClick={processOnClick}
+            isLoader={loading}
+            disabled={str ? false : true}
+          ></Button>
+        </ControlGroup>
       </ControlBox>
       <ResultContainer extraClass={FibonacciPageStyle.result__container}>
         <CircleContainer items={items} showIndex />

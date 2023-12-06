@@ -1,30 +1,38 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { ElementStates } from '../../types/element-states';
 import { Circle } from '../ui/circle/circle';
 
 type TCircleContainer = {
   items: Array<string | number>;
-  head?: number;
-  tail?: number;
+  modifiedElements?: Array<number>;
+  inProgressElements?: Array<number>;
   showIndex?: boolean;
 };
 
 export const CircleContainer: FC<TCircleContainer> = ({
   items,
-  head,
-  tail,
+  modifiedElements,
+  inProgressElements,
   showIndex = false,
 }) => {
-  const calculateCircleState = (ind: number) => {
-    let circleState = ElementStates.Default;
-    if (head !== undefined && tail !== undefined) {
-      if (ind < head || ind > tail) {
+  const calculateCircleState = useCallback(
+    (ind: number) => {
+      let circleState = ElementStates.Default;
+      if (modifiedElements?.includes(ind)) {
         circleState = ElementStates.Modified;
-      } else if (ind === head || ind === tail) {
+      }
+      if (inProgressElements?.includes(ind)) {
         circleState = ElementStates.Changing;
       }
-    }
-    return circleState;
+      return circleState;
+    },
+    [inProgressElements, modifiedElements]
+  );
+
+  const calculateHead = (ind: number) => {
+    if (ind === items.length - 1) {
+      return 'top';
+    } else return undefined;
   };
 
   return (
@@ -32,6 +40,7 @@ export const CircleContainer: FC<TCircleContainer> = ({
       {items.map((el, ind) => (
         <Circle
           state={calculateCircleState(ind)}
+          head={calculateHead(ind)}
           key={ind}
           index={showIndex ? ind : undefined}
           letter={el.toString()}
