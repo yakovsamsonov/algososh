@@ -71,7 +71,7 @@ export const StackPage: FC = () => {
           <Button
             text="Добавить"
             onClick={processPushClick}
-            disabled={str || !loading ? false : true}
+            disabled={!str || loading}
           ></Button>
           <Button
             text="Удалить"
@@ -85,7 +85,7 @@ export const StackPage: FC = () => {
           disabled={stackRef.current.head === null || loading}
         ></Button>
       </ControlBox>
-      <ResultContainer extraClass={StackPageStyle.result__container}>
+      <ResultContainer>
         <CircleContainer
           items={items}
           showIndex
