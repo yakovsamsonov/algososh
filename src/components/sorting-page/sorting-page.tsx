@@ -22,17 +22,19 @@ import { SortingMode } from '../../types';
 import { ArraySorter } from '../../utils/ArraySorter';
 
 export const SortingPage: FC = () => {
+  const arraySorterRef = useRef(new ArraySorter<number>());
+
   const [loading, setLoading] = useState<boolean>(false);
   const [mode, setMode] = useState<SortingMode>(SortingMode.Selection);
   const [orderDir, setOrderDir] = useState<Direction>();
   const [needRefreh, setNeedRefresh] = useState<boolean>(false);
 
-  const arraySorterRef = useRef(new ArraySorter<number>());
-
-  const generateNewArray = useCallback(() => {
+  const generateNewArray = useCallback((withRefresh?: boolean) => {
     const newArr = generateArray(0, 100, 3, 17);
     arraySorterRef.current.setItems(newArr);
-    setNeedRefresh(true);
+    if (withRefresh) {
+      setNeedRefresh(true);
+    }
   }, []);
 
   const processOnClick: MouseEventHandler<HTMLButtonElement> = useCallback(
@@ -72,6 +74,10 @@ export const SortingPage: FC = () => {
       }
     }
   }, [needRefreh]);
+
+  useEffect(() => {
+    generateNewArray(true);
+  }, []);
 
   return (
     <SolutionLayout title="Сортировка массива">
@@ -116,7 +122,9 @@ export const SortingPage: FC = () => {
         </ControlGroup>
         <Button
           text="Новый массив"
-          onClick={generateNewArray}
+          onClick={() => {
+            generateNewArray(true);
+          }}
           disabled={loading}
         ></Button>
       </ControlBox>

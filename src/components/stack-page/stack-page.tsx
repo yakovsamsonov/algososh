@@ -9,10 +9,11 @@ import StackPageStyle from './stack-page.module.css';
 import { ControlGroup } from '../control-group/control-group';
 import { Stack } from '../../utils/Stack';
 import { DELAY_IN_MS } from '../../constants/delays';
+import { Action } from '../../types/action';
 
 export const StackPage: FC = () => {
   const [str, setStr] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [currentAction, setCurrentAction] = useState<Action | undefined>();
   const [items, setItems] = useState<Array<string>>([]);
   const [inProgressElements, setInProgressElements] = useState<Array<number>>(
     []
@@ -29,7 +30,7 @@ export const StackPage: FC = () => {
   }, []);
 
   const processPushClick = useCallback(() => {
-    setLoading(true);
+    setCurrentAction(Action.add);
     stackRef.current.push(str);
     setStr('');
     const items = stackRef.current.getListedValues();
@@ -37,12 +38,12 @@ export const StackPage: FC = () => {
     setInProgressElements([items.length - 1]);
     setTimeout(() => {
       setInProgressElements([]);
-      setLoading(false);
+      setCurrentAction(undefined);
     }, DELAY_IN_MS);
   }, [str]);
 
   const processPopClick = useCallback(() => {
-    setLoading(true);
+    setCurrentAction(Action.remove);
     setStr('');
     const items = stackRef.current.getListedValues();
     setInProgressElements([items.length - 1]);
@@ -51,7 +52,7 @@ export const StackPage: FC = () => {
       const items = stackRef.current.getListedValues();
       setItems(items);
       setInProgressElements([]);
-      setLoading(false);
+      setCurrentAction(undefined);
     }, DELAY_IN_MS);
   }, []);
 
@@ -71,18 +72,25 @@ export const StackPage: FC = () => {
           <Button
             text="Добавить"
             onClick={processPushClick}
-            disabled={!str || loading}
+            disabled={!str || (currentAction && currentAction !== Action.add)}
+            isLoader={currentAction === Action.add}
           ></Button>
           <Button
             text="Удалить"
             onClick={processPopClick}
-            disabled={stackRef.current.head === null || loading}
+            disabled={
+              stackRef.current.head === null ||
+              (currentAction && currentAction !== Action.remove)
+            }
+            isLoader={currentAction === Action.remove}
           ></Button>
         </ControlGroup>
         <Button
           text="Очистить"
           onClick={processClearClick}
-          disabled={stackRef.current.head === null || loading}
+          disabled={
+            stackRef.current.head === null || currentAction !== undefined
+          }
         ></Button>
       </ControlBox>
       <ResultContainer>

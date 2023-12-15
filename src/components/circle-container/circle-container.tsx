@@ -14,6 +14,16 @@ type TCircleContainer = {
   separateWithArrow?: boolean;
 };
 
+type TItem = {
+  value: string;
+  ind?: number;
+  head?: string | JSX.Element;
+  tail?: string | JSX.Element;
+  separateWithArrow?: boolean;
+  showIndex?: boolean;
+  state?: ElementStates;
+};
+
 export const CircleContainer: FC<TCircleContainer> = ({
   items,
   modifiedElements,
@@ -70,22 +80,41 @@ export const CircleContainer: FC<TCircleContainer> = ({
   return (
     <>
       {items.map((el, ind) => (
-        <>
-          {separateWithArrow && ind !== 0 ? (
-            <ArrowIcon key={`${ind}-arr`}></ArrowIcon>
-          ) : (
-            <></>
-          )}
-          <Circle
-            state={calculateCircleState(ind)}
-            head={calculateHead(ind)}
-            tail={calculateTail(ind)}
-            key={ind}
-            index={showIndex ? ind : undefined}
-            letter={el !== undefined ? el.toString() : ''}
-          />
-        </>
+        <Item
+          separateWithArrow={separateWithArrow}
+          key={ind}
+          ind={ind}
+          showIndex={showIndex}
+          value={el !== undefined ? el.toString() : ''}
+          state={calculateCircleState(ind)}
+          head={calculateHead(ind)}
+          tail={calculateTail(ind)}
+        ></Item>
       ))}
+    </>
+  );
+};
+
+const Item: FC<TItem> = ({
+  separateWithArrow = false,
+  showIndex = false,
+  ind,
+  state = ElementStates.Default,
+  head,
+  tail,
+  value,
+}) => {
+  return (
+    <>
+      {separateWithArrow && ind !== 0 ? <ArrowIcon></ArrowIcon> : <></>}
+      <Circle
+        state={state}
+        head={head}
+        tail={tail}
+        key={ind}
+        index={showIndex ? ind : undefined}
+        letter={value}
+      />
     </>
   );
 };

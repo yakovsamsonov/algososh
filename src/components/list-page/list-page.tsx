@@ -231,6 +231,7 @@ export const ListPage: FC = () => {
     setCurrentAction(Action.removeFromIndex);
     const currentInd = parseInt(ind);
     setStr('');
+    setInd('');
     const removedValue = listRef.current.clearValueAt(currentInd);
     setItems([...listRef.current.getListedValues()]);
     if (removedValue) {
@@ -322,9 +323,11 @@ export const ListPage: FC = () => {
           <Input
             type={'number'}
             min={0}
-            max={items.length}
+            max={items.length - 1}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setInd(e.target.value);
+              if (e.target.checkValidity()) {
+                setInd(e.target.value);
+              }
             }}
             value={ind}
             extraClass={ListPageStyle.input}

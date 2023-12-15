@@ -68,7 +68,9 @@ export const FibonacciPage: FC = () => {
             isLimitText={true}
             extraClass={FibonacciPageStyle.input}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setStr(e.target.value);
+              if (e.target.checkValidity()) {
+                setStr(e.target.value);
+              }
             }}
           ></Input>
           <Button

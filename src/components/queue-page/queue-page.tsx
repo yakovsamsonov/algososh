@@ -9,13 +9,13 @@ import { CircleContainer } from '../circle-container/circle-container';
 import QueuePageStyle from './queue-page.module.css';
 import { Queue } from '../../utils/Queue';
 import { QUEUE_SIZE, DELAY_IN_MS, TAIL, HEAD } from '../../constants';
-import { TLabel } from '../../types';
+import { TLabel, Action } from '../../types';
 
 export const QueuePage: FC = () => {
   const queueRef = useRef(new Queue<string>(QUEUE_SIZE));
 
   const [str, setStr] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [currentAction, setCurrentAction] = useState<Action | undefined>();
   const [items, setItems] = useState<Array<string | undefined>>(
     queueRef.current.getListedValues()
   );
@@ -33,7 +33,7 @@ export const QueuePage: FC = () => {
   }, []);
 
   const processPushClick = useCallback(() => {
-    setLoading(true);
+    setCurrentAction(Action.add);
     queueRef.current.enqueue(str);
     setStr('');
     const items = queueRef.current.getListedValues();
@@ -46,12 +46,12 @@ export const QueuePage: FC = () => {
 
     setTimeout(() => {
       setInProgressElements([]);
-      setLoading(false);
+      setCurrentAction(undefined);
     }, DELAY_IN_MS);
   }, [str]);
 
   const processPopClick = useCallback(() => {
-    setLoading(true);
+    setCurrentAction(Action.remove);
     setStr('');
     if (queueRef.current.head !== null) {
       const headIndex = queueRef.current.getHeadIndex();
@@ -64,7 +64,7 @@ export const QueuePage: FC = () => {
       setItems([...items]);
       setIsStackFull(queueRef.current.isFull());
       setInProgressElements([]);
-      setLoading(false);
+      setCurrentAction(undefined);
     }, DELAY_IN_MS);
   }, []);
 
@@ -110,18 +110,29 @@ export const QueuePage: FC = () => {
           <Button
             text="Добавить"
             onClick={processPushClick}
-            disabled={!str || loading || isStackFull}
+            disabled={
+              !str ||
+              (currentAction && currentAction !== Action.add) ||
+              isStackFull
+            }
+            isLoader={currentAction === Action.add}
           ></Button>
           <Button
             text="Удалить"
             onClick={processPopClick}
-            disabled={queueRef.current.length === 0 || loading}
+            disabled={
+              queueRef.current.length === 0 ||
+              (currentAction && currentAction !== Action.remove)
+            }
+            isLoader={currentAction === Action.remove}
           ></Button>
         </ControlGroup>
         <Button
           text="Очистить"
           onClick={processClearClick}
-          disabled={queueRef.current.length === 0 || loading}
+          disabled={
+            queueRef.current.length === 0 || currentAction !== undefined
+          }
         ></Button>
       </ControlBox>
       <ResultContainer>
