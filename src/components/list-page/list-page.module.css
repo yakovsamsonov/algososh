@@ -1,0 +1,16 @@
+.result__container {
+  margin-top: 90px;
+  align-items: center;
+}
+
+.button_large {
+  min-width: 362px;
+}
+
+.button_medium {
+  min-width: 175px;
+}
+
+.input {
+  width: 204px;
+}
