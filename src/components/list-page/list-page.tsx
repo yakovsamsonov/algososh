@@ -44,6 +44,11 @@ export const ListPage: FC = () => {
     },
   ]);
   const [modifiedElements, setModifiedElements] = useState<Array<number>>([]);
+  const [inProgressElements, setInProgressElements] = useState<Array<number>>(
+    []
+  );
+  const [curIndex, setCurIndex] = useState<number>();
+  const [maxIndex, setMaxIndex] = useState<number>();
 
   const addToHead = useCallback(() => {
     setCurrentAction(Action.addToHead);
@@ -186,81 +191,21 @@ export const ListPage: FC = () => {
   }, []);
 
   const addToIndex = useCallback(() => {
-    const currentInd = parseInt(ind);
     setCurrentAction(Action.addToIndex);
-    setHeadLabels([
-      {
-        index: currentInd,
-        value: str,
-        labelType: 'circle',
-      },
-      {
-        index: 0,
-        value: HEAD,
-        labelType: 'label',
-      },
-    ]);
-    setStr('');
+    const currentInd = parseInt(ind);
+    setCurIndex(0);
+    setMaxIndex(currentInd);
+    setInProgressElements([0]);
     setInd('');
-
-    setTimeout(() => {
-      if (str && ind) {
-        listRef.current.insertAt(str, currentInd);
-      }
-      setHeadLabels([
-        {
-          index: 0,
-          value: HEAD,
-          labelType: 'label',
-        },
-      ]);
-      setItems([...listRef.current.getListedValues()]);
-      setModifiedElements([currentInd]);
-      setCurrentAction(undefined);
-      setTailLabels([
-        {
-          index: listRef.current.getSize() - 1,
-          value: TAIL,
-          labelType: 'label',
-        },
-      ]);
-    }, DELAY_IN_MS);
-  }, [str, ind]);
+  }, [ind]);
 
   const removeFromIndex = useCallback(() => {
     setCurrentAction(Action.removeFromIndex);
     const currentInd = parseInt(ind);
-    setStr('');
+    setCurIndex(0);
+    setMaxIndex(currentInd);
+    setInProgressElements([0]);
     setInd('');
-    const removedValue = listRef.current.clearValueAt(currentInd);
-    setItems([...listRef.current.getListedValues()]);
-    if (removedValue) {
-      setTailLabels([
-        {
-          index: listRef.current.getSize() - 1,
-          value: TAIL,
-          labelType: 'label',
-        },
-        {
-          index: currentInd,
-          value: removedValue,
-          labelType: 'circle',
-        },
-      ]);
-    }
-
-    setTimeout(() => {
-      listRef.current.removeAt(currentInd);
-      setItems([...listRef.current.getListedValues()]);
-      setCurrentAction(undefined);
-      setTailLabels([
-        {
-          index: listRef.current.getSize() - 1,
-          value: TAIL,
-          labelType: 'label',
-        },
-      ]);
-    }, DELAY_IN_MS);
   }, [ind]);
 
   useEffect(() => {
@@ -270,6 +215,81 @@ export const ListPage: FC = () => {
       }, DELAY_IN_MS);
     }
   }, [currentAction]);
+
+  useEffect(() => {
+    if (
+      curIndex !== undefined &&
+      maxIndex !== undefined &&
+      curIndex < maxIndex
+    ) {
+      setTimeout(() => {
+        setInProgressElements(inProgressElements.concat(curIndex + 1));
+        setCurIndex(curIndex + 1);
+      }, DELAY_IN_MS);
+    } else if (maxIndex !== undefined && curIndex === maxIndex) {
+      setStr('');
+      if (currentAction === Action.addToIndex) {
+        setHeadLabels([
+          {
+            index: maxIndex,
+            value: str,
+            labelType: 'circle',
+          },
+          {
+            index: 0,
+            value: HEAD,
+            labelType: 'label',
+          },
+        ]);
+      } else if (currentAction === Action.removeFromIndex) {
+        const removedValue = listRef.current.clearValueAt(maxIndex);
+        setItems([...listRef.current.getListedValues()]);
+        if (removedValue) {
+          setTailLabels([
+            {
+              index: maxIndex,
+              value: removedValue,
+              labelType: 'circle',
+            },
+            {
+              index: listRef.current.getSize() - 1,
+              value: TAIL,
+              labelType: 'label',
+            },
+          ]);
+        }
+      }
+      setTimeout(() => {
+        if (currentAction === Action.addToIndex) {
+          if (str) {
+            listRef.current.insertAt(str, maxIndex);
+          }
+          setHeadLabels([
+            {
+              index: 0,
+              value: HEAD,
+              labelType: 'label',
+            },
+          ]);
+        } else if (currentAction === Action.removeFromIndex) {
+          listRef.current.removeAt(maxIndex);
+        }
+        setItems([...listRef.current.getListedValues()]);
+        setModifiedElements([maxIndex]);
+        setCurrentAction(undefined);
+        setTailLabels([
+          {
+            index: listRef.current.getSize() - 1,
+            value: TAIL,
+            labelType: 'label',
+          },
+        ]);
+        setCurIndex(undefined);
+        setMaxIndex(undefined);
+        setInProgressElements([]);
+      }, DELAY_IN_MS);
+    }
+  }, [curIndex]);
 
   return (
     <SolutionLayout title="Связный список">
@@ -354,6 +374,7 @@ export const ListPage: FC = () => {
           separateWithArrow
           headLabels={headLabels}
           tailLabels={tailLabels}
+          inProgressElements={inProgressElements}
           modifiedElements={modifiedElements}
         ></CircleContainer>
       </ResultContainer>
