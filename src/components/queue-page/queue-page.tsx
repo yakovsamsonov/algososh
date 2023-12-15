@@ -9,18 +9,21 @@ import { CircleContainer } from '../circle-container/circle-container';
 import QueuePageStyle from './queue-page.module.css';
 import { Queue } from '../../utils/Queue';
 import { QUEUE_SIZE, DELAY_IN_MS, TAIL, HEAD } from '../../constants';
+import { TLabel } from '../../types';
 
 export const QueuePage: FC = () => {
   const queueRef = useRef(new Queue<string>(QUEUE_SIZE));
 
   const [str, setStr] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [items, setItems] = useState<Array<string | null>>(
+  const [items, setItems] = useState<Array<string | undefined>>(
     queueRef.current.getListedValues()
   );
   const [inProgressElements, setInProgressElements] = useState<Array<number>>(
     []
   );
+
+  const [isStackFull, setIsStackFull] = useState<boolean>(false);
 
   const processClearClick = useCallback(() => {
     queueRef.current.clear();
@@ -35,6 +38,7 @@ export const QueuePage: FC = () => {
     setStr('');
     const items = queueRef.current.getListedValues();
     setItems([...items]);
+    setIsStackFull(queueRef.current.isFull());
     if (queueRef.current.tail !== null) {
       const tailIndex = queueRef.current.getTailIndex();
       setInProgressElements(tailIndex !== undefined ? [tailIndex] : []);
@@ -58,9 +62,36 @@ export const QueuePage: FC = () => {
       queueRef.current.dequeue();
       const items = queueRef.current.getListedValues();
       setItems([...items]);
+      setIsStackFull(queueRef.current.isFull());
       setInProgressElements([]);
       setLoading(false);
     }, DELAY_IN_MS);
+  }, []);
+
+  const getHeadLabels = useCallback(() => {
+    const headIndex = queueRef.current.getHeadIndex();
+    const headLabels: Array<TLabel> = [];
+    if (headIndex !== undefined) {
+      headLabels.push({
+        index: headIndex,
+        value: HEAD,
+        labelType: 'label',
+      });
+    }
+    return headLabels;
+  }, []);
+
+  const getTailLabels = useCallback(() => {
+    const tailIndex = queueRef.current.getTailIndex();
+    const tailLabels: Array<TLabel> = [];
+    if (tailIndex !== undefined) {
+      tailLabels.push({
+        index: tailIndex,
+        value: TAIL,
+        labelType: 'label',
+      });
+    }
+    return tailLabels;
   }, []);
 
   return (
@@ -79,7 +110,7 @@ export const QueuePage: FC = () => {
           <Button
             text="Добавить"
             onClick={processPushClick}
-            disabled={!str || loading}
+            disabled={!str || loading || isStackFull}
           ></Button>
           <Button
             text="Удалить"
@@ -98,28 +129,8 @@ export const QueuePage: FC = () => {
           items={items}
           showIndex
           inProgressElements={inProgressElements}
-          headLabels={
-            queueRef.current.head !== null
-              ? [
-                  {
-                    index: queueRef.current.head,
-                    value: HEAD,
-                    labelType: 'label',
-                  },
-                ]
-              : []
-          }
-          tailLabels={
-            queueRef.current.tail !== null
-              ? [
-                  {
-                    index: queueRef.current.tail,
-                    value: TAIL,
-                    labelType: 'label',
-                  },
-                ]
-              : []
-          }
+          headLabels={getHeadLabels()}
+          tailLabels={getTailLabels()}
         />
       </ResultContainer>
     </SolutionLayout>
