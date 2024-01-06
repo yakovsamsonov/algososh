@@ -27,13 +27,26 @@ export const SortingPage: FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [mode, setMode] = useState<SortingMode>(SortingMode.Selection);
   const [orderDir, setOrderDir] = useState<Direction>();
-  const [needRefreh, setNeedRefresh] = useState<boolean>(false);
+  const [items, setItems] = useState<Array<number>>([]);
+  const [modifiedElements, setModifiedElements] = useState<Array<number>>([]);
+  const [inProgressElements, setInProgressElements] = useState<Array<number>>(
+    []
+  );
 
-  const generateNewArray = useCallback((withRefresh?: boolean) => {
+  const generateNewArray = useCallback(() => {
     const newArr = generateArray(0, 100, 3, 17);
     arraySorterRef.current.setItems(newArr);
-    if (withRefresh) {
-      setNeedRefresh(true);
+    setItems(newArr);
+    setInProgressElements(arraySorterRef.current.getCurrentPointers());
+    setModifiedElements(arraySorterRef.current.getCompletedPointers());
+  }, []);
+
+  const recalculateState = useCallback((arr: ArraySorter<number>) => {
+    setInProgressElements(arr.getCurrentPointers());
+    setModifiedElements(arr.getCompletedPointers());
+    setLoading(arr.hasIncompleteSteps);
+    if (!arr.hasIncompleteSteps) {
+      setOrderDir(undefined);
     }
   }, []);
 
@@ -42,11 +55,10 @@ export const SortingPage: FC = () => {
       const requestedDirection = (evt.target as Element).closest('button')
         ?.name as Direction;
       setOrderDir(requestedDirection);
-      arraySorterRef.current.setSorterConfig(mode, requestedDirection);
-      setLoading(true);
-      setNeedRefresh(true);
+      arraySorterRef.current.prepareSorter(mode, requestedDirection);
+      recalculateState(arraySorterRef.current);
     },
-    [mode]
+    [mode, recalculateState]
   );
 
   const changeMode = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -54,28 +66,17 @@ export const SortingPage: FC = () => {
   }, []);
 
   useEffect(() => {
-    setNeedRefresh(false);
-    if (needRefreh) {
-      const curr = arraySorterRef.current.currentInd;
-      const tail = arraySorterRef.current.endInd;
-      if (curr !== undefined && tail !== undefined) {
-        if (curr < tail) {
-          setTimeout(() => {
-            arraySorterRef.current.doOneSortingStep();
-            setNeedRefresh(true);
-          }, DELAY_IN_MS);
-        } else {
-          setTimeout(() => {
-            setLoading(false);
-            setOrderDir(undefined);
-          }, DELAY_IN_MS);
-        }
-      }
+    if (loading) {
+      const arr = arraySorterRef.current;
+      setTimeout(() => {
+        arr.doOneSortingStep();
+        recalculateState(arr);
+      }, DELAY_IN_MS);
     }
-  }, [needRefreh]);
+  }, [inProgressElements]);
 
   useEffect(() => {
-    generateNewArray(true);
+    generateNewArray();
   }, [generateNewArray]);
 
   return (
@@ -121,19 +122,15 @@ export const SortingPage: FC = () => {
         </ControlGroup>
         <Button
           text="Новый массив"
-          onClick={() => {
-            generateNewArray(true);
-          }}
+          onClick={generateNewArray}
           disabled={loading}
         ></Button>
       </ControlBox>
       <ResultContainer extraClass={SortingPageStyle.result__container}>
         <ColumnContainer
-          items={arraySorterRef.current.items}
-          startInd={arraySorterRef.current.startInd}
-          currentInd={arraySorterRef.current.currentInd}
-          nextInd={arraySorterRef.current.nextInd}
-          endInd={arraySorterRef.current.endInd}
+          items={items}
+          modifiedElements={modifiedElements}
+          inProgressElements={inProgressElements}
         ></ColumnContainer>
       </ResultContainer>
     </SolutionLayout>

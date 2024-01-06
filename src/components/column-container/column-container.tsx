@@ -1,43 +1,31 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { ElementStates } from '../../types/element-states';
 import { Column } from '../ui/column/column';
 
 type TColumnContainer = {
   items?: Array<number>;
-  startInd?: number;
-  currentInd?: number;
-  nextInd?: number;
-  endInd?: number;
+  modifiedElements?: Array<number>;
+  inProgressElements?: Array<number>;
 };
 
 export const ColumnContainer: FC<TColumnContainer> = ({
   items,
-  startInd,
-  currentInd,
-  nextInd,
-  endInd,
+  modifiedElements,
+  inProgressElements,
 }) => {
-  const calculateColumnState = (ind: number) => {
-    let circleState = ElementStates.Default;
-    if (
-      startInd !== undefined &&
-      currentInd !== undefined &&
-      nextInd !== undefined &&
-      endInd !== undefined
-    ) {
-      if (
-        ind < startInd ||
-        (ind === currentInd && ind === nextInd) ||
-        ind > endInd ||
-        (ind === currentInd && ind === endInd)
-      ) {
+  const calculateColumnState = useCallback(
+    (ind: number) => {
+      let circleState = ElementStates.Default;
+      if (modifiedElements?.includes(ind)) {
         circleState = ElementStates.Modified;
-      } else if (ind === currentInd || ind === nextInd) {
+      }
+      if (inProgressElements?.includes(ind)) {
         circleState = ElementStates.Changing;
       }
-    }
-    return circleState;
-  };
+      return circleState;
+    },
+    [modifiedElements, inProgressElements]
+  );
 
   return (
     <>

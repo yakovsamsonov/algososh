@@ -3,6 +3,7 @@ import { SortingMode, Direction } from '../../types';
 interface TArraySorter<T> {
   mode: SortingMode;
   direction: Direction;
+  hasIncompleteSteps: boolean;
   items?: Array<T>;
   startInd?: number;
   currentInd?: number;
@@ -14,6 +15,7 @@ interface TArraySorter<T> {
 export class ArraySorter<T> implements TArraySorter<T> {
   mode: SortingMode;
   direction: Direction;
+  hasIncompleteSteps: boolean;
   items?: Array<T>;
   startInd: number;
   currentInd?: number;
@@ -24,6 +26,7 @@ export class ArraySorter<T> implements TArraySorter<T> {
   constructor(mode?: SortingMode, direction?: Direction) {
     this.mode = mode || SortingMode.Selection;
     this.direction = direction || Direction.Ascending;
+    this.hasIncompleteSteps = false;
     this.items = undefined;
     this.startInd = 0;
     this.currentInd = undefined;
@@ -32,7 +35,7 @@ export class ArraySorter<T> implements TArraySorter<T> {
     this.endInd = undefined;
   }
 
-  setSorterConfig = (mode: SortingMode, direction: Direction) => {
+  prepareSorter = (mode: SortingMode, direction: Direction) => {
     this.mode = mode;
     this.direction = direction;
     this._resetIndexes();
@@ -43,9 +46,7 @@ export class ArraySorter<T> implements TArraySorter<T> {
     this.currentInd = undefined;
     this.candidateInd = undefined;
     this.nextInd = undefined;
-    if (this.items) {
-      this.endInd = this.items?.length - 1;
-    }
+    this.endInd = items.length - 1;
   };
 
   _resetIndexes = () => {
@@ -55,6 +56,7 @@ export class ArraySorter<T> implements TArraySorter<T> {
     this.nextInd = 1;
     if (this.items) {
       this.endInd = this.items?.length - 1;
+      this.hasIncompleteSteps = this.items.length !== 0;
     }
   };
 
@@ -62,7 +64,8 @@ export class ArraySorter<T> implements TArraySorter<T> {
     if (
       this.currentInd !== undefined &&
       this.nextInd !== undefined &&
-      this.items !== undefined
+      this.items !== undefined &&
+      this.hasIncompleteSteps
     ) {
       const curr = this.items[this.currentInd];
       const next = this.items[this.nextInd];
@@ -108,6 +111,16 @@ export class ArraySorter<T> implements TArraySorter<T> {
           this.nextInd = 1;
         }
       }
+
+      if (
+        this.currentInd !== undefined &&
+        this.endInd !== undefined &&
+        this.currentInd < this.endInd
+      ) {
+        this.hasIncompleteSteps = true;
+      } else {
+        this.hasIncompleteSteps = false;
+      }
     }
   };
 
@@ -117,5 +130,47 @@ export class ArraySorter<T> implements TArraySorter<T> {
       this.items[firstIndex] = this.items[secondIndex];
       this.items[secondIndex] = temp;
     }
+  };
+
+  sort = () => {
+    while (this.hasIncompleteSteps) {
+      this.doOneSortingStep();
+    }
+  };
+
+  getCurrentPointers = (): Array<number> => {
+    const pointers = [];
+    if (
+      this.hasIncompleteSteps &&
+      this.currentInd !== undefined &&
+      this.nextInd !== undefined
+    ) {
+      pointers.push(this.currentInd);
+      pointers.push(this.nextInd);
+    }
+    return pointers;
+  };
+
+  getCompletedPointers = (): Array<number> => {
+    const pointers = [];
+    if (
+      this.items !== undefined &&
+      this.startInd !== undefined &&
+      this.currentInd !== undefined &&
+      this.nextInd !== undefined &&
+      this.endInd !== undefined
+    ) {
+      for (let ind = 0; ind < this.items.length; ind++) {
+        if (
+          ind < this.startInd ||
+          (ind === this.currentInd && ind === this.nextInd) ||
+          ind > this.endInd ||
+          (ind === this.currentInd && ind === this.endInd)
+        ) {
+          pointers.push(ind);
+        }
+      }
+    }
+    return pointers;
   };
 }

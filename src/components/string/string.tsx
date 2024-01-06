@@ -30,7 +30,7 @@ export const StringComponent: FC = () => {
   const recalculateState = useCallback((revList: ReversableList<string>) => {
     setInProgressElements(revList.getCurrentPointers());
     setModifiedElements(revList.getCompletedPointers());
-    setLoading(reversableListRef.current.hasIncompleteSteps);
+    setLoading(revList.hasIncompleteSteps);
   }, []);
 
   const processOnClick = useCallback(() => {
@@ -42,13 +42,13 @@ export const StringComponent: FC = () => {
 
   useEffect(() => {
     if (loading) {
+      const revList = reversableListRef.current;
       setTimeout(() => {
-        const revList = reversableListRef.current;
         revList.doNextStep();
         recalculateState(revList);
       }, DELAY_IN_MS);
     }
-  }, [modifiedElements]);
+  }, [inProgressElements]);
 
   return (
     <SolutionLayout title="Строка">

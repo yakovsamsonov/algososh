@@ -2,7 +2,7 @@ import { ReversableList } from './ReversableList';
 
 describe('Разворот строки', () => {
   let revList: ReversableList<string>;
-  beforeAll(() => {
+  beforeEach(() => {
     revList = new ReversableList<string>([]);
   });
 
