@@ -1,4 +1,4 @@
-import { SortingMode, Direction } from '../types';
+import { SortingMode, Direction } from '../../types';
 
 interface TArraySorter<T> {
   mode: SortingMode;
@@ -35,6 +35,7 @@ export class ArraySorter<T> implements TArraySorter<T> {
   setSorterConfig = (mode: SortingMode, direction: Direction) => {
     this.mode = mode;
     this.direction = direction;
+    this._resetIndexes();
   };
 
   setItems = (items: Array<T>) => {
@@ -47,7 +48,7 @@ export class ArraySorter<T> implements TArraySorter<T> {
     }
   };
 
-  resetIndexes = () => {
+  _resetIndexes = () => {
     this.startInd = 0;
     this.currentInd = 0;
     this.candidateInd = undefined;

@@ -19,7 +19,7 @@ import { generateArray } from '../../utils/generateArray';
 import SortingPageStyle from './sorting-page.module.css';
 import { DELAY_IN_MS } from '../../constants/delays';
 import { SortingMode } from '../../types';
-import { ArraySorter } from '../../utils/ArraySorter';
+import { ArraySorter } from '../../utils/array-sorter/ArraySorter';
 
 export const SortingPage: FC = () => {
   const arraySorterRef = useRef(new ArraySorter<number>());
@@ -43,7 +43,6 @@ export const SortingPage: FC = () => {
         ?.name as Direction;
       setOrderDir(requestedDirection);
       arraySorterRef.current.setSorterConfig(mode, requestedDirection);
-      arraySorterRef.current.resetIndexes();
       setLoading(true);
       setNeedRefresh(true);
     },
@@ -77,7 +76,7 @@ export const SortingPage: FC = () => {
 
   useEffect(() => {
     generateNewArray(true);
-  }, []);
+  }, [generateNewArray]);
 
   return (
     <SolutionLayout title="Сортировка массива">

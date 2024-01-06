@@ -11,7 +11,7 @@ import { Input } from '../ui/input/input';
 import { Button } from '../ui/button/button';
 import StringPageStyle from './string.module.css';
 import { DELAY_IN_MS } from '../../constants/delays';
-import { ReversableList } from '../../utils/ReversableList';
+import { ReversableList } from '../../utils/reversable-list/ReversableList';
 import { CircleContainer } from '../circle-container/circle-container';
 import { ControlBox } from '../control-box/control-box';
 import { ControlGroup } from '../control-group/control-group';
@@ -20,7 +20,6 @@ import { ResultContainer } from '../result-container/result-container';
 export const StringComponent: FC = () => {
   const [str, setStr] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [needRefreh, setNeedRefresh] = useState<boolean>(false);
   const [modifiedElements, setModifiedElements] = useState<Array<number>>([]);
   const [inProgressElements, setInProgressElements] = useState<Array<number>>(
     []
@@ -28,73 +27,28 @@ export const StringComponent: FC = () => {
 
   const reversableListRef = useRef(new ReversableList<string>([]));
 
+  const recalculateState = useCallback((revList: ReversableList<string>) => {
+    setInProgressElements(revList.getCurrentPointers());
+    setModifiedElements(revList.getCompletedPointers());
+    setLoading(reversableListRef.current.hasIncompleteSteps);
+  }, []);
+
   const processOnClick = useCallback(() => {
-    setLoading(true);
-    reversableListRef.current.changeInitialArr(str.split(''));
-    setInProgressElements([]);
-    setModifiedElements(calculateModifiedElements());
-    setNeedRefresh(true);
+    const revList = reversableListRef.current;
+    revList.changeInitialArr(str.split(''));
+    recalculateState(revList);
     setStr('');
-  }, [str]);
-
-  const calculateInProgressElements = useCallback(() => {
-    const inProgress = [];
-    if (reversableListRef.current.head !== undefined) {
-      inProgress.push(reversableListRef.current.head);
-    }
-    if (reversableListRef.current.tail !== undefined) {
-      inProgress.push(reversableListRef.current.tail);
-    }
-    return inProgress;
-  }, []);
-
-  const calculateModifiedElements = useCallback(() => {
-    const modified = [];
-    if (
-      reversableListRef.current.head !== undefined &&
-      reversableListRef.current.tail !== undefined
-    ) {
-      for (let i = 0; i < reversableListRef.current.currentArr.length; i++) {
-        if (
-          i < reversableListRef.current.head ||
-          i > reversableListRef.current.tail
-        ) {
-          modified.push(i);
-        }
-      }
-    }
-    return modified;
-  }, []);
+  }, [str, recalculateState]);
 
   useEffect(() => {
-    setNeedRefresh(false);
-    if (needRefreh) {
-      if (
-        reversableListRef.current.head === undefined ||
-        reversableListRef.current.tail === undefined
-      ) {
-        setTimeout(() => {
-          reversableListRef.current.initCounters();
-          setInProgressElements(calculateInProgressElements());
-          setModifiedElements(calculateModifiedElements());
-          setNeedRefresh(true);
-        }, DELAY_IN_MS);
-      } else if (
-        reversableListRef.current.head <= reversableListRef.current.tail
-      ) {
-        setTimeout(() => {
-          reversableListRef.current.swap();
-          setInProgressElements(calculateInProgressElements());
-          setModifiedElements(calculateModifiedElements());
-          setNeedRefresh(true);
-        }, DELAY_IN_MS);
-      } else {
-        setInProgressElements([]);
-        setModifiedElements(calculateModifiedElements());
-        setLoading(false);
-      }
+    if (loading) {
+      setTimeout(() => {
+        const revList = reversableListRef.current;
+        revList.doNextStep();
+        recalculateState(revList);
+      }, DELAY_IN_MS);
     }
-  }, [needRefreh]);
+  }, [modifiedElements]);
 
   return (
     <SolutionLayout title="Строка">
