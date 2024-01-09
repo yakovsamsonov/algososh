@@ -68,6 +68,7 @@ export const StringComponent: FC = () => {
             onClick={processOnClick}
             isLoader={loading}
             disabled={str ? false : true}
+            data-test-id="button-string"
           ></Button>
         </ControlGroup>
       </ControlBox>
