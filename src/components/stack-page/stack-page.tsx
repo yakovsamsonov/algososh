@@ -26,7 +26,7 @@ export const StackPage: FC = () => {
     setStr('');
     const items = stackRef.current.getListedValues();
     setItems(items);
-    setInProgressElements([items.length - 1]);
+    setInProgressElements([]);
   }, []);
 
   const processPushClick = useCallback(() => {
@@ -45,7 +45,6 @@ export const StackPage: FC = () => {
   const processPopClick = useCallback(() => {
     setCurrentAction(Action.remove);
     setStr('');
-    const items = stackRef.current.getListedValues();
     setInProgressElements([items.length - 1]);
     setTimeout(() => {
       stackRef.current.pop();
@@ -54,7 +53,7 @@ export const StackPage: FC = () => {
       setInProgressElements([]);
       setCurrentAction(undefined);
     }, DELAY_IN_MS);
-  }, []);
+  }, [items.length]);
 
   return (
     <SolutionLayout title="Стек">

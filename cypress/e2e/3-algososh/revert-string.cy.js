@@ -4,7 +4,7 @@ describe('string algo', () => {
 
     cy.get('input').as('textField');
 
-    cy.get('[data-test-id="button-string"]').as('actionButton');
+    cy.get('button').contains('Развернуть').parent().as('actionButton');
   });
 
   it('button disabled when no input', () => {
@@ -12,15 +12,17 @@ describe('string algo', () => {
     cy.get('@actionButton').should('be.disabled');
   });
 
-  it('creates list of circle on click', () => {
+  it('creates and reverts list on click', () => {
     cy.get('@textField').type('слово');
     cy.get('@actionButton').click();
-    cy.get('div[class*="result-container"]').as('results');
+    cy.get('button > img');
+
+    cy.get('[class*="result-container"]').as('results');
     cy.get('@results')
-      .find('div[class*="circle_content"]')
+      .find('[class*="circle_content"]')
       .should('have.length', 5);
     cy.get('@results')
-      .find('div[class*="circle_content"]')
+      .find('[class*="circle_content"]')
       .first()
       .as('first_element');
     cy.get('@first_element').next().as('second_element');
@@ -76,5 +78,7 @@ describe('string algo', () => {
     cy.get('@results')
       .find('[class*="circle_modified"]')
       .should('have.length', 5);
+
+    cy.get('button > img').should('not.exist');
   });
 });
