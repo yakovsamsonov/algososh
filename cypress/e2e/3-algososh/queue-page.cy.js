@@ -36,7 +36,7 @@ describe('queue algo', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/queue');
 
-    cy.get('input').as('textField');
+    cy.get('input[placeholder*="Введите значение"]').as('textField');
 
     cy.get('button').as('buttons');
 
@@ -76,8 +76,8 @@ describe('queue algo', () => {
       .first()
       .as('queueStart');
 
-    cy.get('@queueStart').children(['class*=circle_changing']);
-    cy.get('@queueStart').children(['class*=circle_modified']);
+    cy.get('@queueStart').find('[class*=circle_changing]');
+    cy.get('@queueStart').find('[class*=circle_default]');
     checkQueueContent([92]);
     cy.get('@removeButton').should('be.enabled');
     cy.get('@clearButton').should('be.enabled');
@@ -97,7 +97,7 @@ describe('queue algo', () => {
     cy.get('@addButton').should('be.disabled');
     cy.get('@clearButton').should('be.disabled');
 
-    cy.get('@queueStart').children(['class*=circle_changing']);
+    cy.get('@queueStart').find('[class*=circle_changing]');
 
     cy.get('@removeButton').should('be.enabled');
     cy.get('@clearButton').should('be.enabled');

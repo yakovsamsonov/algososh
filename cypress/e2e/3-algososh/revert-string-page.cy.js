@@ -31,49 +31,49 @@ describe('string algo', () => {
     cy.get('@forth_element').next().as('fifth_element');
 
     cy.get('@first_element').contains('с');
-    cy.get('@first_element').children(['class*=circle_changing']);
+    cy.get('@first_element').find('[class*=circle_changing]');
 
     cy.get('@second_element').contains('л');
-    cy.get('@second_element').children(['class*=circle_default']);
+    cy.get('@second_element').find('[class*=circle_default]');
 
     cy.get('@third_element').contains('о');
-    cy.get('@third_element').children(['class*=circle_default']);
+    cy.get('@third_element').find('[class*=circle_default]');
 
     cy.get('@forth_element').contains('в');
-    cy.get('@forth_element').children(['class*=circle_default']);
+    cy.get('@forth_element').find('[class*=circle_default]');
 
     cy.get('@fifth_element').contains('о');
-    cy.get('@fifth_element').children(['class*=circle_changing']);
+    cy.get('@fifth_element').find('[class*=circle_changing]');
 
     cy.get('@first_element').contains('о');
-    cy.get('@first_element').children('[class*=circle_modified]');
+    cy.get('@first_element').find('[class*=circle_modified]');
 
     cy.get('@second_element').contains('л');
-    cy.get('@second_element').children(['class*=circle_changing']);
+    cy.get('@second_element').find('[class*=circle_changing]');
 
     cy.get('@third_element').contains('о');
-    cy.get('@third_element').children(['class*=circle_default']);
+    cy.get('@third_element').find('[class*=circle_default]');
 
     cy.get('@forth_element').contains('в');
-    cy.get('@forth_element').children(['class*=circle_changing']);
+    cy.get('@forth_element').find('[class*=circle_changing]');
 
     cy.get('@fifth_element').contains('с');
-    cy.get('@fifth_element').children(['class*=circle_modified']);
+    cy.get('@fifth_element').find('[class*=circle_modified]');
 
     cy.get('@first_element').contains('о');
-    cy.get('@first_element').children('[class*=circle_modified]');
+    cy.get('@first_element').find('[class*=circle_modified]');
 
     cy.get('@second_element').contains('в');
-    cy.get('@second_element').children(['class*=circle_modified']);
+    cy.get('@second_element').find('[class*=circle_modified]');
 
     cy.get('@third_element').contains('о');
-    cy.get('@third_element').children(['class*=circle_changing']);
+    cy.get('@third_element').find('[class*=circle_changing]');
 
     cy.get('@forth_element').contains('л');
-    cy.get('@forth_element').children(['class*=circle_modified']);
+    cy.get('@forth_element').find('[class*=circle_modified]');
 
     cy.get('@fifth_element').contains('с');
-    cy.get('@fifth_element').children(['class*=circle_modified']);
+    cy.get('@fifth_element').find('[class*=circle_modified]');
 
     cy.get('@results')
       .find('[class*="circle_modified"]')

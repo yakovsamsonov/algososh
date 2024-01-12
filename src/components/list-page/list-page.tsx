@@ -74,7 +74,6 @@ export const ListPage: FC = () => {
       ]);
       setItems([...listRef.current.getListedValues()]);
       setModifiedElements([0]);
-      setCurrentAction(undefined);
       setTailLabels([
         {
           index: listRef.current.getSize() - 1,
@@ -147,7 +146,6 @@ export const ListPage: FC = () => {
         ]);
         setItems([...listRef.current.getListedValues()]);
         setModifiedElements([listRef.current.getSize() - 1]);
-        setCurrentAction(undefined);
         setTailLabels([
           {
             index: listRef.current.getSize() - 1,
@@ -209,12 +207,13 @@ export const ListPage: FC = () => {
   }, [ind]);
 
   useEffect(() => {
-    if (!currentAction) {
+    if (modifiedElements.length > 0) {
       setTimeout(() => {
         setModifiedElements([]);
+        setCurrentAction(undefined);
       }, DELAY_IN_MS);
     }
-  }, [currentAction]);
+  }, [modifiedElements]);
 
   useEffect(() => {
     if (
@@ -271,12 +270,12 @@ export const ListPage: FC = () => {
               labelType: 'label',
             },
           ]);
+          setModifiedElements([maxIndex]);
         } else if (currentAction === Action.removeFromIndex) {
           listRef.current.removeAt(maxIndex);
+          setCurrentAction(undefined);
         }
         setItems([...listRef.current.getListedValues()]);
-        setModifiedElements([maxIndex]);
-        setCurrentAction(undefined);
         setTailLabels([
           {
             index: listRef.current.getSize() - 1,
@@ -303,6 +302,7 @@ export const ListPage: FC = () => {
             }}
             value={str}
             extraClass={ListPageStyle.input}
+            placeholder="Введите значение"
           ></Input>
           <Button
             text="Добавить в head"
@@ -351,6 +351,7 @@ export const ListPage: FC = () => {
             }}
             value={ind}
             extraClass={ListPageStyle.input}
+            placeholder="Введите индекс"
           ></Input>
           <Button
             text="Добавить по индексу"

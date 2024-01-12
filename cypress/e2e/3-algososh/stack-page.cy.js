@@ -47,8 +47,8 @@ describe('stack algo', () => {
       .find('[class*="circle_content"]')
       .last()
       .as('actionCircle');
-    cy.get('@actionCircle').children(['class*=circle_changing']);
-    cy.get('@actionCircle').children(['class*=circle_modified']);
+    cy.get('@actionCircle').find('[class*=circle_changing]');
+    cy.get('@actionCircle').find('[class*=circle_modified]');
     cy.get('@actionCircle').contains(13);
     cy.get('@removeButton').should('be.enabled');
     cy.get('@clearButton').should('be.enabled');
@@ -68,7 +68,7 @@ describe('stack algo', () => {
       .last()
       .as('actionCircle');
     cy.get('@actionCircle').contains(22);
-    cy.get('@actionCircle').children(['class*=circle_changing']);
+    cy.get('@actionCircle').find('[class*=circle_changing]');
 
     cy.get('@removeButton').should('be.enabled');
     cy.get('@clearButton').should('be.enabled');

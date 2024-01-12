@@ -106,6 +106,7 @@ export const QueuePage: FC = () => {
               setStr(e.target.value);
             }}
             value={str}
+            placeholder="Введите значение"
           ></Input>
           <Button
             text="Добавить"
