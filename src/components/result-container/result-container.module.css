@@ -1,0 +1,10 @@
+.result {
+  margin: 48px auto 0;
+  max-width: 1040px;
+  width: fit-content;
+  display: flex;
+  column-gap: 16px;
+  row-gap: 78px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}

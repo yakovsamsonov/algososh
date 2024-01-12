@@ -1,5 +1,5 @@
 .content {
-  background-image: url("../../../images/bg.jpg");
+  background-image: url('../../../images/bg.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   min-height: 100vh;
@@ -22,7 +22,7 @@
   border-radius: 20px;
   margin: 31px 20px 28px;
   padding: 36px;
-  height: 693px;
+  min-height: 693px;
   box-sizing: border-box;
 }
 
